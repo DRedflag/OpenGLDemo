@@ -1,0 +1,15 @@
+[
+    {
+        "arguments": [
+            "g++",
+            "-c",
+            "-Wall",
+            "-Iinclude",
+            "-o",
+            "main.o",
+            "src/main.cc"
+        ],
+        "directory": "/home/redflag/opengl",
+        "file": "src/main.cc"
+    }
+]
