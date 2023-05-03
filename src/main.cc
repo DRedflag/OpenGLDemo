@@ -24,8 +24,8 @@ int main(int argc, char** argv){
         glutInit(&argc, argv);
         glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH);
 
-        int width = 400;
-        int height = 300; 
+        int width = 500;
+        int height = 500; 
         glutInitWindowSize(width, height);
 
         int x = 200;
@@ -74,9 +74,9 @@ static void RenderSceneCB(){
 
 static void CreatVertexBuffer(){
         v3f vertices[3];
-        v3f_assign(vertices[0], 0.0f, -1.0f, 0.0f);
-        v3f_assign(vertices[1], 0.0f, 1.0f, 0.0f);
-        v3f_assign(vertices[2], 1.0f, -1.0f, 0.0f);
+        v3f_assign(vertices[0], -1.0f, -0.578f, 0.0f);
+        v3f_assign(vertices[1], 0.0f, 1.155f, 0.0f);
+        v3f_assign(vertices[2], 1.0f, -0.578f, 0.0f);
         
         glGenBuffers(1, &VB0);
         glBindBuffer(GL_ARRAY_BUFFER, VB0);
