@@ -29,11 +29,19 @@ void m4f_assign(m4f matrix,
         matrix[3][3] = a33;
 }
 
-void zRotation(float matrix[4][4], float angle){
+void zRotation(m4f matrix, float angle){
         m4f_assign(matrix, 
                    cos(angle), -sin(angle), 0, 0,
                    sin(angle), cos(angle), 0, 0,
                    0, 0, 1, 0,
+                   0, 0, 0, 1);
+}
+
+void xRotation(m4f matrix, float angle){
+        m4f_assign(matrix, 
+                   cos(angle), 0, sin(angle), 0,
+                   0, 1, 0, 0,
+                   -sin(angle), 0, cos(angle), 0,
                    0, 0, 0, 1);
 }
 

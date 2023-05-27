@@ -22,5 +22,6 @@ void m4f_assign(m4f matrix,
                 float a10, float a11, float a12, float a13, 
                 float a20, float a21, float a22, float a23,
                 float a30, float a31, float a32, float a33);
-void zRotation(float matrix[4][4], float angle);
+void zRotation(m4f matrix, float angle);
+void xRotation(m4f matrix, float angle);
 #endif

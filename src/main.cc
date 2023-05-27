@@ -55,10 +55,10 @@ static void RenderSceneCB(){
         glClear(GL_COLOR_BUFFER_BIT);        
         static float alpha = 0.0f;
 
-        alpha += 0.01f;
+        alpha += 0.05f;
         if (alpha > 2) alpha = 0.0f;
         float spin[4][4];
-        zRotation(spin, alpha*3.14);
+        xRotation(spin, alpha*3.14);
         glUniformMatrix4fv(TranslationLocation, 1, GL_TRUE, &spin[0][0]);
 
         glBindBuffer(GL_ARRAY_BUFFER, VB0);
