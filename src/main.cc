@@ -4,9 +4,11 @@
 #include <string>
 #include <cstdio>
 #include <stdlib.h>
+#include <math.h>
 
 #include "mathcore.h"
 #include "util.h" 
+#include "translation.h"
 
 
 GLuint VB0;
@@ -29,9 +31,7 @@ int main(int argc, char** argv){
         glutInit(&argc, argv);
         glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH);
 
-        int width = 500;
-        int height = 500; 
-        glutInitWindowSize(width, height);
+        glutInitWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
 
         int x = 200;
         int y = 100;
@@ -45,7 +45,10 @@ int main(int argc, char** argv){
         }
         GLclampf Red = 0.0f, Green = 0.0f, Blue = 0.0f, Alpha = 0.0f;
         glClearColor(Red, Green, Blue, Alpha);
-        
+
+        glEnable(GL_CULL_FACE);
+        glFrontFace(GL_CW);
+        glCullFace(GL_BACK);
         CompileShader();
         CreateVertexBuffer();
         CreateIndexBuffer();
@@ -61,14 +64,26 @@ int main(int argc, char** argv){
         
 static void RenderSceneCB(){
         glClear(GL_COLOR_BUFFER_BIT);        
-        // static float alpha = 0.0f;
+        static float alpha = 0.0f;
 
-        // alpha += 0.05f;
-        // if (alpha > 2) alpha = 0.0f;
-        float spin[4][4];
-        xRotation(spin, 0);
+        alpha += 0.01f;
+        if (alpha > 2) alpha = 0.0f;
+        m4f Translation;
+        CreateTranslationMatrix(0.0f, 0.0f, 2.0f, alpha*PI , alpha*PI, 0.0f, Translation);
 
-        glUniformMatrix4fv(TranslationLocation, 1, GL_TRUE, &spin[0][0]);
+        // yRotation(Translation, alpha);
+        // float FOV = PI/2.0f;
+        // float f = 1/tanf(FOV);
+        //
+        // m4f_assign(
+        //         project,
+        //         f, 0.0f, 0.0f, 0.0f,
+        //         0.0f, f, 0.0f, 0.0f,
+        //         0.0f, 0.0f, 1.0f, 0.0f,
+        //         0.0f, 0.0f, 1.0f, 0.0f
+        // );
+        
+        glUniformMatrix4fv(TranslationLocation, 1, GL_TRUE, &Translation[0][0]);
 
         glBindBuffer(GL_ARRAY_BUFFER, VB0);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IB0);
@@ -81,7 +96,7 @@ static void RenderSceneCB(){
         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(3*sizeof(float)));
 
 
-        glDrawElements(GL_TRIANGLES, 54, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
@@ -91,28 +106,15 @@ static void RenderSceneCB(){
 }
 
 static void CreateVertexBuffer(){
-        vertex vertices[19];
-        vertices[0] = vertex(0.0f, 0.0f);
-
-        vertices[1] = vertex(-1.0f, 1.0f);
-        vertices[2] = vertex(-0.75f, 1.0f);
-        vertices[3] = vertex(-0.5f, 1.0f);
-        vertices[4] = vertex(-0.25f, 1.0f);
-        vertices[5] = vertex(0.0f, 1.0f);
-        vertices[6] = vertex(0.25f, 1.0f);
-        vertices[7] = vertex(0.5f, 1.0f);
-        vertices[8] = vertex(0.75f, 1.0f);
-        vertices[9] = vertex(1.0f, 1.0f);
-        
-        vertices[10] = vertex(-1.0f, -1.0f);
-        vertices[11] = vertex(-0.75f, -1.0f);
-        vertices[12] = vertex(-0.5f, -1.0f);
-        vertices[13] = vertex(-0.25f, -1.0f);
-        vertices[14] = vertex(0.0f, -1.0f);
-        vertices[15] = vertex(0.25f, -1.0f);
-        vertices[16] = vertex(0.5f, -1.0f);
-        vertices[17] = vertex(0.75f, -1.0f);
-        vertices[18] = vertex(1.0f, -1.0f);
+        vertex vertices[8];
+        vertices[0] = vertex(0.5f, 0.5f, 0.5f);
+        vertices[1] = vertex(-0.5f, 0.5f, -0.5f);
+        vertices[2] = vertex(-0.5f, 0.5f, 0.5f);
+        vertices[3] = vertex(0.5f, -0.5f, -0.5f);
+        vertices[4] = vertex(-0.5f, -0.5f, -0.5f);
+        vertices[5] = vertex(0.5f, 0.5f, -0.5f);
+        vertices[6] = vertex(0.5f, -0.5f, 0.5f);
+        vertices[7] = vertex(-0.5f, -0.5f, 0.5f);
 
 
         
@@ -124,25 +126,17 @@ static void CreateVertexBuffer(){
 static void CreateIndexBuffer(){
         unsigned int Indices[] = {
                 0, 1, 2,
-                0, 2, 3,
-                0, 3, 4,
-                0, 4, 5,
-                0, 5, 6,
-                0, 6, 7,
-                0, 7, 8,
-                0, 8, 9,
-
-                0, 10, 11,
-                0, 11, 12,
-                0, 12, 13,
-                0, 13, 14, 
-                0, 14, 15,
-                0, 15, 16,
-                0, 16, 17,
-                0, 17, 18,
-
-                0, 1, 10,
-                0, 9, 18
+                1, 3, 4,
+                5, 6, 3,
+                7, 3, 6,
+                2, 4, 7,
+                0, 7, 6,
+                0, 5, 1,
+                1, 5, 3,
+                5, 0, 6,
+                7, 4, 3,
+                2, 1, 4,
+                0, 2, 7
         };
         glGenBuffers(1, &IB0);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IB0);

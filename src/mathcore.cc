@@ -37,7 +37,7 @@ void zRotation(m4f matrix, float angle){
                    0, 0, 0, 1);
 }
 
-void xRotation(m4f matrix, float angle){
+void yRotation(m4f matrix, float angle){
         m4f_assign(matrix, 
                    cos(angle), 0, sin(angle), 0,
                    0, 1, 0, 0,
@@ -45,14 +45,48 @@ void xRotation(m4f matrix, float angle){
                    0, 0, 0, 1);
 }
 
+void xRotation(m4f matrix, float angle){
+        m4f_assign(matrix, 
+                   1, 0, 0, 0,
+                   0, cos(angle), -sin(angle), 0,
+                   0, sin(angle), cos(angle), 0,
+                   0, 0, 0, 1);
+}
+
+void Mat4Mul(m4f left, m4f right, m4f out){
+        m4f res;
+
+        m4f_assign(
+                res,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0
+        );
+        for (int i = 0; i < 4; i++)
+                for (int j = 0; j < 4; j++)
+                        for (int k = 0; k < 4; k++){
+                                res[i][j] += left[i][k]*right[k][j];
+                        }
+        Mat4Copy(res, out);
+}
+
+void Mat4Copy(m4f src, m4f dest){
+        for (int i=0; i<4; i++)
+                for(int j=0; j<4; j++){
+                        dest[i][j] = src[i][j];
+                }
+} 
+
 vertex::vertex(){}
 
-vertex::vertex(float x, float y){
-        v3f_assign(pos, x, y, 0.0f);
+vertex::vertex(float x, float y, float z){
+        v3f_assign(pos, x, y, z);
         float red = (float) rand()/(float) RAND_MAX;
         float green = (float) rand()/(float) RAND_MAX;
         float blue = (float) rand()/(float) RAND_MAX;
         v3f_assign(color, red, green, blue);
 }
+
 
 

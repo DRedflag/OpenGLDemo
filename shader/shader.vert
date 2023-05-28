@@ -10,6 +10,6 @@ out vec4 Color;
 
 
 void main(){
-        gl_Position = Translation*vec4(Position.x , Position.y , Position.z,  1.0);
+        gl_Position = Translation*vec4(Position,  1.0);
         Color = vec4(inColor, 1.0);
 }
