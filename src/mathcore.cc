@@ -45,4 +45,14 @@ void xRotation(m4f matrix, float angle){
                    0, 0, 0, 1);
 }
 
+vertex::vertex(){}
+
+vertex::vertex(float x, float y){
+        v3f_assign(pos, x, y, 0.0f);
+        float red = (float) rand()/(float) RAND_MAX;
+        float green = (float) rand()/(float) RAND_MAX;
+        float blue = (float) rand()/(float) RAND_MAX;
+        v3f_assign(color, red, green, blue);
+}
+
 

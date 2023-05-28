@@ -3,24 +3,29 @@
 #include <GL/freeglut.h>
 #include <string>
 #include <cstdio>
+#include <stdlib.h>
 
 #include "mathcore.h"
 #include "util.h" 
 
 
 GLuint VB0;
+GLuint IB0;
 GLint TranslationLocation;
 const char* pVSFileName = "shader/shader.vert";
 const char* pFSFileName = "shader/shader.frag";
 
 
 static void RenderSceneCB();
-static void CreatVertexBuffer();
+static void CreateVertexBuffer();
+static void CreateIndexBuffer();
 static void AddShader(GLuint ShaderProgram, const char* pShaderText, GLenum ShaderType);
 static void CompileShader();
 
 
+
 int main(int argc, char** argv){
+        srandom(time(NULL));
         glutInit(&argc, argv);
         glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH);
 
@@ -42,7 +47,10 @@ int main(int argc, char** argv){
         glClearColor(Red, Green, Blue, Alpha);
         
         CompileShader();
-        CreatVertexBuffer();
+        CreateVertexBuffer();
+        CreateIndexBuffer();
+
+
         glutDisplayFunc(RenderSceneCB);
 
         glutMainLoop();
@@ -53,34 +61,92 @@ int main(int argc, char** argv){
         
 static void RenderSceneCB(){
         glClear(GL_COLOR_BUFFER_BIT);        
-        static float alpha = 0.0f;
+        // static float alpha = 0.0f;
 
-        alpha += 0.05f;
-        if (alpha > 2) alpha = 0.0f;
+        // alpha += 0.05f;
+        // if (alpha > 2) alpha = 0.0f;
         float spin[4][4];
-        xRotation(spin, alpha*3.14);
+        xRotation(spin, 0);
+
         glUniformMatrix4fv(TranslationLocation, 1, GL_TRUE, &spin[0][0]);
 
         glBindBuffer(GL_ARRAY_BUFFER, VB0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IB0);
+        
 
         glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), 0);
+
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(3*sizeof(float)));
+
+
+        glDrawElements(GL_TRIANGLES, 54, GL_UNSIGNED_INT, 0);
+
         glDisableVertexAttribArray(0);
+        glDisableVertexAttribArray(1);
         
         glutPostRedisplay();
         glutSwapBuffers();
 }
 
-static void CreatVertexBuffer(){
-        v3f vertices[3];
-        v3f_assign(vertices[0], -1.0f, -0.578f, 0.0f);
-        v3f_assign(vertices[1], 0.0f, 1.155f, 0.0f);
-        v3f_assign(vertices[2], 1.0f, -0.578f, 0.0f);
+static void CreateVertexBuffer(){
+        vertex vertices[19];
+        vertices[0] = vertex(0.0f, 0.0f);
+
+        vertices[1] = vertex(-1.0f, 1.0f);
+        vertices[2] = vertex(-0.75f, 1.0f);
+        vertices[3] = vertex(-0.5f, 1.0f);
+        vertices[4] = vertex(-0.25f, 1.0f);
+        vertices[5] = vertex(0.0f, 1.0f);
+        vertices[6] = vertex(0.25f, 1.0f);
+        vertices[7] = vertex(0.5f, 1.0f);
+        vertices[8] = vertex(0.75f, 1.0f);
+        vertices[9] = vertex(1.0f, 1.0f);
+        
+        vertices[10] = vertex(-1.0f, -1.0f);
+        vertices[11] = vertex(-0.75f, -1.0f);
+        vertices[12] = vertex(-0.5f, -1.0f);
+        vertices[13] = vertex(-0.25f, -1.0f);
+        vertices[14] = vertex(0.0f, -1.0f);
+        vertices[15] = vertex(0.25f, -1.0f);
+        vertices[16] = vertex(0.5f, -1.0f);
+        vertices[17] = vertex(0.75f, -1.0f);
+        vertices[18] = vertex(1.0f, -1.0f);
+
+
         
         glGenBuffers(1, &VB0);
         glBindBuffer(GL_ARRAY_BUFFER, VB0);
         glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+}
+
+static void CreateIndexBuffer(){
+        unsigned int Indices[] = {
+                0, 1, 2,
+                0, 2, 3,
+                0, 3, 4,
+                0, 4, 5,
+                0, 5, 6,
+                0, 6, 7,
+                0, 7, 8,
+                0, 8, 9,
+
+                0, 10, 11,
+                0, 11, 12,
+                0, 12, 13,
+                0, 13, 14, 
+                0, 14, 15,
+                0, 15, 16,
+                0, 16, 17,
+                0, 17, 18,
+
+                0, 1, 10,
+                0, 9, 18
+        };
+        glGenBuffers(1, &IB0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IB0);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Indices), Indices, GL_STATIC_DRAW);
 }
 
 static void CompileShader(){

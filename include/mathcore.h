@@ -15,6 +15,12 @@ struct vector3f{
         }
 };
 
+struct vertex{
+        v3f pos;
+        v3f color;
+        vertex();
+        vertex(float x, float y);
+};
 
 void v3f_assign(v3f vector, float x, float y, float z);
 void m4f_assign(m4f matrix,
